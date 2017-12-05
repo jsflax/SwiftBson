@@ -22,6 +22,14 @@ public final class BsonDateTime: BsonValue {
     public init(value: Int64) {
         self.value = value
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.value = try reader.readDateTime()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeDateTime(value: self.value)
+    }
 }
 
 extension BsonDateTime: Equatable {

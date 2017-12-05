@@ -8,15 +8,12 @@
 
 import Foundation
 
-private protocol _BsonValue {
-    var bsonType: BsonType { get }
-}
 /**
  * Base class for any BSON type.
  *
  * @since 3.0
  */
-public protocol BsonValue: Codable {
+public protocol BsonValue: BsonCodable {
 
     /**
      * Gets the BSON type of this value.

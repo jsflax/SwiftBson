@@ -9,6 +9,8 @@
 import Foundation
 
 public struct BsonArray: BsonValue, Collection, ExpressibleByArrayLiteral {
+    private static let defaultRegistry = CodableRegistry.from(providers: BsonValueCodableProvider())
+
     private var storage: BsonValueArray
 
     public typealias BsonValueArray = [BsonValue]
@@ -44,5 +46,29 @@ public struct BsonArray: BsonValue, Collection, ExpressibleByArrayLiteral {
 
     public init(arrayLiteral elements: ArrayLiteralElement...) {
         storage = BsonValueArray.init(elements)
+    }
+    
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        try reader.readStartArray();
+
+        self.storage = BsonValueArray()
+        while try reader.readBsonType() != .endOfDocument {
+            let registry = decoderContext.registry ?? BsonArray.defaultRegistry
+            try storage.append(registry.decode(withIdentifier: defaultBsonTypeClassMap[reader.currentBsonType]!,
+                                               reader: reader,
+                                               decoderContext: decoderContext))
+        }
+
+        try reader.readEndArray()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeStartArray()
+
+        for value in self {
+            try encoderContext.encodeWithChildContext(encoder: value, writer: writer)
+        }
+
+        try writer.writeEndArray()
     }
 }

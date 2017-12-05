@@ -13,7 +13,7 @@ import Foundation
  *
  * @since 3.0
  */
-public class BsonWriterSettings {
+open class BsonWriterSettings {
     public let maxSerializationDepth: Int
 
     /**
@@ -21,14 +21,7 @@ public class BsonWriterSettings {
      *
      * @param maxSerializationDepth the maximum number of nested levels to serialise
      */
-    public init(maxSerializationDepth: Int) {
+    public init(maxSerializationDepth: Int = 1024) {
         self.maxSerializationDepth = maxSerializationDepth
-    }
-
-    /**
-     * Creates a new instance of the settings with the default maximum serialization depth of 1024.
-     */
-    public convenience init() {
-        self.init(maxSerializationDepth: 1024)
     }
 }

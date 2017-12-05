@@ -19,6 +19,14 @@ public final class BsonBool: BsonValue {
     public init(value: Bool) {
         self.value = value
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.value = try reader.readBoolean()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeBoolean(value: value)
+    }
 }
 
 extension BsonBool: Equatable {

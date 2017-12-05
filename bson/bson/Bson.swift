@@ -19,6 +19,5 @@ protocol Bson {
      * @param <TDocument> the type of the document class
      * @return the BsonDocument
      */
-    func toBsonDocument<TDocument>(documentClass: TDocument.Type,
-                                   codecRegistry: CodecRegistry) -> BsonDocument
+    func toBsonDocument<T>(documentClass: T.Type) -> BsonDocument
 }

@@ -9,22 +9,6 @@
 import Foundation
 
 class JsonReader: AbstractBsonReader {
-    var codingPath: [CodingKey]
-
-    var userInfo: [CodingUserInfoKey : Any]
-
-    func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
-
-    }
-
-    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
-
-    }
-
-    func singleValueContainer() throws -> SingleValueDecodingContainer {
-        
-    }
-
     private let scanner: JsonScanner
 
     var currentName: String = ""

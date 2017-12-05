@@ -24,6 +24,16 @@ public class BsonRegularExpression: BsonValue {
         self.pattern = pattern
         self.options = String(options.sorted())
     }
+
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        let regex = try reader.readRegularExpression()
+        self.pattern = regex.pattern
+        self.options = regex.options
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeRegularExpression(regularExpression: self)
+    }
 }
 
 extension BsonRegularExpression: Equatable {

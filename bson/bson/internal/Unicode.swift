@@ -17,6 +17,13 @@ internal extension Character {
         return Int(value)
     }
 
+    func unicodeScalarCodePoint() -> UInt32 {
+        let characterString = String(self)
+        let scalars = characterString.unicodeScalars
+
+        return scalars[scalars.startIndex].value
+    }
+
     internal static func isDigit(_ int: Int) -> Bool {
         return int.characterValue?.isDigit ?? false
     }
@@ -85,5 +92,16 @@ internal extension Int {
 
     internal static func ~=(pattern: Character, value: Int) -> Bool {
         return value == pattern
+    }
+
+    internal static func ~=(pattern: CharacterSet, value: Int) -> Bool {
+        guard let scalars = value.characterValue?.unicodeScalars else {
+            return false
+        }
+        for unicode in scalars {
+            if !pattern.contains(unicode) { return false }
+        }
+
+        return true
     }
 }

@@ -18,6 +18,16 @@ import Foundation
  */
 public final class BsonUndefined: BsonValue {
     public var bsonType: BsonType = .undefined
+
+    public init() {}
+
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        try reader.readUndefined()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeUndefined()
+    }
 }
 
 extension BsonUndefined: Equatable {

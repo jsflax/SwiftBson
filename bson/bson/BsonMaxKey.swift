@@ -16,4 +16,14 @@ public final class BsonMaxKey: BsonValue, Hashable {
     }
 
     public var bsonType: BsonType = .maxKey
+
+    public init() {}
+    
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        try reader.readMaxKey()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeMaxKey()
+    }
 }

@@ -15,11 +15,6 @@ import Foundation
  */
 public protocol BsonWriter {
     /**
-     * Flushes any pending data to the output destination.
-     */
-    func flush()
-
-    /**
      * Writes a BSON Binary data element to the writer.
      *
      * @param binary The Binary data.

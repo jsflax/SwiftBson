@@ -22,6 +22,14 @@ public final class BsonJavascript: BsonValue {
     public init(code: String) {
         self.code = code
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.code = try reader.readJavaScript()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeJavaScript(code: self.code)
+    }
 }
 
 extension BsonJavascript: Equatable {

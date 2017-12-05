@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol BsonReader: Decoder {
+public protocol BsonReader {
     var mark: BsonReaderMark? { get }
     var currentBsonType: BsonType { get set }
 

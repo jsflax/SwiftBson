@@ -18,6 +18,16 @@ public class BsonBinary: BsonValue {
         self.data = data
         self.type = type
     }
+
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        let binData = try reader.readBinaryData()
+        self.data = binData.data
+        self.type = binData.type
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeBinaryData(binary: self)
+    }
 }
 
 extension BsonBinary: Hashable {

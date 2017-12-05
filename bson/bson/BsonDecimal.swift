@@ -24,6 +24,14 @@ public final class BsonDecimal: BsonNumber {
     init(value: Decimal) {
         self.value = value
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.value = try reader.readDecimal()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeDecimal128(value: self.value)
+    }
 }
 
 extension BsonDecimal: Equatable {

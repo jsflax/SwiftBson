@@ -27,6 +27,14 @@ public final class BsonSymbol: BsonValue {
     public init(symbol: String) {
         self.symbol = symbol
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.symbol = try reader.readSymbol()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeSymbol(value: symbol)
+    }
 }
 
 extension BsonSymbol: Equatable {

@@ -24,6 +24,14 @@ public final class BsonInt64: BsonNumber {
     init(value: Int64) {
         self.value = value
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.value = try reader.readInt64()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeInt64(value: self.value)
+    }
 }
 
 extension BsonInt64: Equatable {

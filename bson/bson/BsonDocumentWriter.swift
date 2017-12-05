@@ -186,6 +186,9 @@ public class BsonDocumentWriter: AbstractBsonWriter {
         write(value: BsonUndefined())
     }
 
+    public func doWriteName(name: String) throws {
+    }
+
     public func flush() {
     }
 }

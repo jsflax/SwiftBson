@@ -26,4 +26,8 @@ extension Array where Element == Byte {
             Byte(String(hexa[$0..<$0.advanced(by: 2)]), radix: 16)
         })
     }
+
+    func encodeToBase64() -> String {
+        return Data(self).base64EncodedString()
+    }
 }

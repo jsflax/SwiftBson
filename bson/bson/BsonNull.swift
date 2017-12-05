@@ -18,4 +18,13 @@ public final class BsonNull: BsonValue, Hashable {
     public var bsonType: BsonType = .null
 
     public var hashValue: Int = 0
+
+    public init() {}
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        try reader.readNull()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeNull()
+    }
 }

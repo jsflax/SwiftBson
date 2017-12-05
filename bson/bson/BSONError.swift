@@ -11,5 +11,6 @@ import Foundation
 enum BSONError: Error {
     case unexpected(String)
     case invalidOperation(String)
+    case invalidConversion(String)
     case serialization(String)
 }

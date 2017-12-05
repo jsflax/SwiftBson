@@ -24,6 +24,16 @@ public final class BsonJavascriptWithScope: BsonValue {
         self.code = code
         self.scope = scope
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.code = try reader.readJavaScriptWithScope()
+        self.scope = try BsonDocument.init(reader: reader, decoderContext: decoderContext)
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeJavaScriptWithScope(code: self.code)
+        try self.scope.encode(writer: writer, encoderContext: encoderContext)
+    }
 }
 
 extension BsonJavascriptWithScope: Equatable {

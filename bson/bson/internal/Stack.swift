@@ -11,8 +11,12 @@ import Foundation
 public struct Stack<T> {
     private var items = [T]()
 
-    public func peek() -> T {
-        return items[items.count - 1]
+    public func peek() -> T? {
+        if (items.count > 0) {
+            return items[items.count - 1]
+        } else {
+            return nil
+        }
     }
 
     public mutating func push(_ item: T) {

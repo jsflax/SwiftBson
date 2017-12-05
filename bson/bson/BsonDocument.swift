@@ -11,6 +11,9 @@ import Foundation
 public typealias BsonElement = (String, BsonValue)
 
 public class BsonDocument: BsonValue, Bson, Collection {
+    private static let idFieldName = "_id";
+    private static let defaultRegistry = CodableRegistry.from(providers: BsonValueCodableProvider())
+
     public var bsonType: BsonType = .document
     private var _storage = [String: BsonValue]()
 
@@ -23,6 +26,46 @@ public class BsonDocument: BsonValue, Bson, Collection {
         for (key, value) in dictionary {
             self[key] = value ?? nil
         }
+    }
+
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        try reader.readStartDocument()
+
+        while try reader.readBsonType() != .endOfDocument {
+            let fieldName = try reader.readName()
+            let registry = decoderContext.registry ?? BsonDocument.defaultRegistry
+
+            self[fieldName] = try registry.decode(withIdentifier: defaultBsonTypeClassMap[reader.currentBsonType]!,
+                                                  reader: reader,
+                                                  decoderContext: decoderContext)
+        }
+
+        try reader.readEndDocument()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeStartDocument()
+
+        try beforeFields(writer: writer, encoderContext: encoderContext)
+        for entry in self {
+            if skipField(encoderContext: encoderContext, key: entry.key) { continue }
+
+            try writer.writeName(name: entry.key)
+            try entry.value.encode(writer: writer, encoderContext: encoderContext)
+        }
+
+        try writer.writeEndDocument()
+    }
+
+    private func beforeFields(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        if encoderContext.isEncodingCollectibleDocument && self.contains { $0.key == BsonDocument.idFieldName } {
+            try writer.writeName(name: BsonDocument.idFieldName);
+            try self[BsonDocument.idFieldName]?.encode(writer: writer, encoderContext: encoderContext)
+        }
+    }
+
+    private func skipField(encoderContext: EncoderContext, key: String) -> Bool {
+        return encoderContext.isEncodingCollectibleDocument && key == BsonDocument.idFieldName
     }
 
     public func index(after i: Dictionary<String, BsonValue>.Index) -> Dictionary<String, BsonValue>.Index {
@@ -50,8 +93,7 @@ public class BsonDocument: BsonValue, Bson, Collection {
         }
     }
 
-    func toBsonDocument<TDocument>(documentClass: TDocument.Type,
-                                   codecRegistry: CodecRegistry) -> BsonDocument {
+    func toBsonDocument<TDocument>(documentClass: TDocument.Type) -> BsonDocument {
         return self
     }
 
@@ -76,22 +118,4 @@ extension BsonDocument: Hashable {
         })
     }
 }
-extension Dictionary where Key == String, Value == Any? {
-    func get<T>(forKey key: String, defaultValue: T? = nil) throws -> T {
-        guard let value = self[key] as? T else {
-            if let defaultValue = defaultValue {
-                return defaultValue
-            }
 
-            throw BSONError.invalidOperation(
-                "Value expected to be of type \(T.self) is of " +
-                "unexpected type \(String(describing: self[key].self))")
-        }
-
-        return value
-    }
-
-    func objectId(forKey key: String, defaultValue: ObjectId? = nil) throws -> ObjectId {
-        return try get(forKey: key, defaultValue: defaultValue)
-    }
-}

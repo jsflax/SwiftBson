@@ -28,12 +28,12 @@ public final class BsonObjectId: BsonValue {
         self.value = value
     }
 
-    public func encode(to encoder: Encoder) throws {
-    
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.value = try reader.readObjectId()
     }
 
-    public init(from decoder: Decoder) throws {
-
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeObjectId(objectId: self.value)
     }
 }
 

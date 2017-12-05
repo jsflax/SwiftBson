@@ -16,4 +16,14 @@ public final class BsonMinKey: BsonValue, Hashable {
     }
 
     public var bsonType: BsonType = .minKey
+
+    public init() {}
+
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        try reader.readMinKey()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeMinKey()
+    }
 }

@@ -25,6 +25,16 @@ public class BsonDbPointer: BsonValue {
         self.namespace = namespace
         self.id = id
     }
+
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        let dbPointer = try reader.readDBPointer()
+        self.namespace = dbPointer.namespace
+        self.id = dbPointer.id
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeDBPointer(value: self)
+    }
 }
 
 extension BsonDbPointer: Equatable {

@@ -16,8 +16,10 @@ import Foundation
  */
 public struct EncoderContext {
     public static let defaultContext = EncoderContext { _ in }
-
-    public let isEncodingCollectibleDocument: Bool = false
+    public var transformer: Transformer? = nil
+    public var isEncodingCollectibleDocument: Bool = false
+    public var registry: CodableRegistry? = nil
+    public var userInfo = [AnyHashable: Any]()
 
     /**
      * Create a builder.
@@ -34,13 +36,30 @@ public struct EncoderContext {
      * @param value the value to encode
      * @param <T> the type of the value
      */
-    public func encodeWithChildContext(encoder: BoxedCodec,
-                                       writer: BsonWriter,
-                                       value: Any) throws {
-        try encoder.encode(writer: writer, value: value, encoderContext: .defaultContext)
+    public func encodeWithChildContext(encoder: BsonEncodable,
+                                       writer: BsonWriter) throws {
+        try encoder.encode(writer: writer, encoderContext: .defaultContext)
     }
 
     init(builder: Builder) {
         builder(&self)
+    }
+
+    public func info<T>(forKey key: AnyHashable) throws -> T {
+        guard let value = self.userInfo[key] as? T else {
+            throw BSONError.unexpected(
+                "DecoderContext.userInfo did not contain required key \(key)")
+        }
+
+        return value
+    }
+
+    public subscript<T>(key: AnyHashable) -> T? {
+        guard let value = self.userInfo[key]
+            as? T else {
+                return nil
+        }
+
+        return value
     }
 }

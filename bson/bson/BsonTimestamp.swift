@@ -46,6 +46,14 @@ public class BsonTimestamp: BsonValue {
         self.value = UInt64((seconds << 32) | (increment & 0xFFFFFFFF))
     }
 
+
+    public required init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.value = try reader.readTimestamp().value
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeTimestamp(value: self)
+    }
     /**
      * Gets the time in seconds since epoch.
      *

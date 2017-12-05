@@ -22,6 +22,14 @@ public final class BsonString: BsonValue {
     public init(value: String) {
         self.value = value
     }
+
+    public init(reader: BsonReader, decoderContext: DecoderContext) throws {
+        self.value = try reader.readString()
+    }
+
+    public func encode(writer: BsonWriter, encoderContext: EncoderContext) throws {
+        try writer.writeString(value: self.value)
+    }
 }
 
 extension BsonString: Equatable {

@@ -46,7 +46,7 @@ public protocol AbstractBsonWriter: class, BsonWriter {
     var state: State { get set }
     var context: WriterContext? { get }
     var serializationDepth: Int { get set }
-    var isClosed: Bool { get }
+    var isClosed: Bool { get set }
 
     /**
      * Handles the logic to start writing a document
@@ -194,6 +194,8 @@ public protocol AbstractBsonWriter: class, BsonWriter {
      * Handles the logic of writing an Undefined  value
      */
     func doWriteUndefined() throws
+
+    func doWriteName(name: String) throws
 }
 
 extension AbstractBsonWriter {
@@ -205,13 +207,12 @@ extension AbstractBsonWriter {
 
     public func writeStartDocument() throws {
         try checkPreconditions(validStates: .initial, .value, .scopeDocument, .done)
-        guard let name = self.context?.name else {
-            try throwInvalidState(validStates: .initial, .value, .scopeDocument, .done)
-            return
+        if let name = self.context?.name {
+            if let fieldName = fieldNameValidatorStack.peek()?.getValidator(forFieldName: name) {
+                self.fieldNameValidatorStack.push(fieldName)
+            }
         }
-        self.fieldNameValidatorStack.push(
-            fieldNameValidatorStack.peek().getValidator(forFieldName: name)
-        )
+
         self.serializationDepth += 1
         if serializationDepth > settings.maxSerializationDepth {
             throw BSONError.serialization("Maximum serialization depth exceeded (does the object being "
@@ -240,7 +241,7 @@ extension AbstractBsonWriter {
 
         try doWriteEndDocument()
 
-        if context != nil || context?.contextType == .topLevel {
+        if context == nil || context?.contextType == .topLevel {
             state = . done
         } else {
             state = nextState()
@@ -258,9 +259,9 @@ extension AbstractBsonWriter {
         try checkPreconditions(validStates: .value)
 
         if let name = context?.name {
-            fieldNameValidatorStack.push(
-                fieldNameValidatorStack.peek().getValidator(forFieldName: name)
-            )
+            if let fieldName = fieldNameValidatorStack.peek()?.getValidator(forFieldName: name) {
+                self.fieldNameValidatorStack.push(fieldName)
+            }
         }
 
         self.serializationDepth += 1
@@ -352,6 +353,7 @@ extension AbstractBsonWriter {
 
     public func writeDouble(value: Double) throws {
         try checkPreconditions(validStates: .value, .initial)
+        print(state)
         try doWriteDouble(value: value)
         state = nextState()
     }
@@ -449,26 +451,18 @@ extension AbstractBsonWriter {
 
 
     public func writeName(name: String) throws {
-        if (state != .name) {
+        if state != .name {
             try throwInvalidState(validStates: .name)
         }
-        if (!fieldNameValidatorStack.peek().validate(fieldName: name)) {
+
+        guard let fieldNameValidator = fieldNameValidatorStack.peek(),
+            fieldNameValidator.validate(fieldName: name) else {
             throw RuntimeError.illegalArgument("Invalid BSON field name \(name)")
         }
-        doWriteName(name: name)
+        try doWriteName(name: name)
         context?.name = name
         state = .value
     }
-
-    /**
-     * Handles the logic of writing the element name.
-     *
-     * @param name the name of the element
-     * @since 3.5
-     */
-    internal func doWriteName(name: String) {
-    }
-
 
     public func writeNull(name: String) throws {
         try writeName(name: name)

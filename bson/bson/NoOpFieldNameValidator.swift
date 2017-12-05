@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NoOpFieldNameValidator: FieldNameValidator {
+public class NoOpFieldNameValidator: FieldNameValidator {
     public init() {}
     public func validate(fieldName: String) -> Bool {
         return true;
