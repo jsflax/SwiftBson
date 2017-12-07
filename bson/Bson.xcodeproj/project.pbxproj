@@ -407,7 +407,7 @@
 				49B5DAA51FD4648D00A3B692 /* UuidRepresentation.swift */,
 				49B5DAB71FD5109D00A3B692 /* io */,
 				49CCE8521FCA473500EE846D /* atomics */,
-				493FBC681FC5FD7600E540A7 /* codecs */,
+				493FBC681FC5FD7600E540A7 /* codables */,
 				49C412011FCCC28C0015B7A9 /* internal */,
 				494D38F91FCB2FF50040F29E /* json */,
 				49CCE8511FCA45FB00EE846D /* types */,
@@ -427,7 +427,7 @@
 			path = bsonTests;
 			sourceTree = "<group>";
 		};
-		493FBC681FC5FD7600E540A7 /* codecs */ = {
+		493FBC681FC5FD7600E540A7 /* codables */ = {
 			isa = PBXGroup;
 			children = (
 				490A6DE11FD3606E00D2391F /* Array+Codable.swift */,
@@ -448,7 +448,7 @@
 				49B5DAAB1FD4A35F00A3B692 /* ValueCodableProvider.swift */,
 				49BDB9231FD357FB00238A70 /* configuration */,
 			);
-			path = codecs;
+			path = codables;
 			sourceTree = "<group>";
 		};
 		494D38F91FCB2FF50040F29E /* json */ = {
